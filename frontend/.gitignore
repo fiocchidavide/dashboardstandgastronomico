@@ -1,0 +1,14 @@
+# Dipendenze
+node_modules/
+
+# File di build
+dist/
+
+# File di ambiente locale
+.env.local
+.env.*.local
+
+# Log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
