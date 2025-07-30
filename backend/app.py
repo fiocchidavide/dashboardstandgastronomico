@@ -176,7 +176,12 @@ def serve_static_files(path):
     except FileNotFoundError:
         # Se il file non esiste, serve index.html per il routing client-side
         return send_from_directory(app.static_folder, 'index.html')
+    
+@app.route('/')
+def serve_index():
+    """Serve il file index.html per la root dell'applicazione."""
+    return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
     # Avvia l'applicazione Flask in modalità di debug sulla porta 5001
-    app.run(debug=True, port=5001)
+    app.run(port=os.getenv('SERVER_PORT', 5001))
