@@ -36,19 +36,20 @@ def get_db_connection():
         print(f"Errore di connessione al database: {e}")
         return None
     
-@app.route('/api/debug', methods=['GET'])
-def print_debug():
-    """Endpoint API per testare la connessione al database."""
-    try:
-        with get_db_connection() as conn:
-            if conn is None:
-                return jsonify({"error": "Impossibile connettersi al database"}), 500
-            with conn.cursor() as cur:
-                # Esegui una semplice query per testare la connessione
-                cur.execute('SELECT 1')
-                return jsonify({"message": "Connessione al database riuscita!"})
-    except Exception as e:
-        return jsonify({"error": f"Errore durante il test di connessione: {e}"}), 500
+if DEBUG_MODE:
+    @app.route('/api/debug', methods=['GET'])
+    def print_debug():
+        """Endpoint API per testare la connessione al database."""
+        try:
+            with get_db_connection() as conn:
+                if conn is None:
+                    return jsonify({"error": "Impossibile connettersi al database"}), 500
+                with conn.cursor() as cur:
+                    # Esegui una semplice query per testare la connessione
+                    cur.execute('SELECT 1')
+                    return jsonify({"message": "Connessione al database riuscita!"})
+        except Exception as e:
+            return jsonify({"error": f"Errore durante il test di connessione: {e}"}), 500
 
 @app.route('/api/articles', methods=['GET'])
 def get_articles():
@@ -187,10 +188,25 @@ def serve_static_files(path):
 @app.route('/')
 def serve_index():
     """Serve il file index.html per la root dell'applicazione."""
+    print("Serving file:", os.path.join(app.static_folder, 'index.html'))
     return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
     # Avvia l'applicazione Flask con configurazione personalizzabile
+
+    print("Configurazione ambiente:")
+    print(f"STATIC_FOLDER: {STATIC_FOLDER}")
+    print(f"STATIC_URL_PATH: {STATIC_URL_PATH}")
+    print(f"ENABLE_CORS: {ENABLE_CORS}")
+    print(f"DEBUG_MODE: {DEBUG_MODE}")
+    print(f"DB_HOST: {os.getenv('DB_HOST')}")
+    print(f"DB_PORT: {os.getenv('DB_PORT')}")
+    print(f"DB_NAME: {os.getenv('DB_NAME')}")
+    print(f"DB_USER: {os.getenv('DB_USER')}")
+    print(f"DB_PASSWORD: {os.getenv('DB_PASSWORD')}")
+    print(f"SERVER_PORT: {os.getenv('SERVER_PORT', 5001)}")
+    print(f"SERVER_HOST: {os.getenv('SERVER_HOST', '127.0.0.1')}")
+
     server_port = int(os.getenv('SERVER_PORT', 5001))
     server_host = os.getenv('SERVER_HOST', '127.0.0.1')
     app.run(host=server_host, port=server_port, debug=DEBUG_MODE)
