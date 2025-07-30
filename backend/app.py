@@ -8,11 +8,18 @@ from psycopg2 import sql
 # Carica le variabili d'ambiente dal file .env
 load_dotenv()
 
-# Configura l'app Flask per servire i file statici dalla build del frontend
-app = Flask(__name__, static_folder='../frontend/dist', static_url_path='/')
+# Ottieni i parametri di configurazione dalle variabili d'ambiente
+STATIC_FOLDER = os.getenv('STATIC_FOLDER', '../frontend/dist')
+STATIC_URL_PATH = os.getenv('STATIC_URL_PATH', '/')
+ENABLE_CORS = os.getenv('ENABLE_CORS', 'true').lower() == 'true'
+DEBUG_MODE = os.getenv('DEBUG_MODE', 'false').lower() == 'true'
 
-# Abilita CORS, utile soprattutto in fase di sviluppo
-CORS(app)
+# Configura l'app Flask per servire i file statici dalla build del frontend
+app = Flask(__name__, static_folder=STATIC_FOLDER, static_url_path=STATIC_URL_PATH)
+
+# Abilita CORS se configurato
+if ENABLE_CORS:
+    CORS(app)
 
 def get_db_connection():
     """Crea e restituisce una connessione al database."""
@@ -183,5 +190,7 @@ def serve_index():
     return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
-    # Avvia l'applicazione Flask in modalità di debug sulla porta 5001
-    app.run(port=os.getenv('SERVER_PORT', 5001))
+    # Avvia l'applicazione Flask con configurazione personalizzabile
+    server_port = int(os.getenv('SERVER_PORT', 5001))
+    server_host = os.getenv('SERVER_HOST', '127.0.0.1')
+    app.run(host=server_host, port=server_port, debug=DEBUG_MODE)
