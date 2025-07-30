@@ -168,10 +168,14 @@ def get_orders():
     except Exception as e:
         return jsonify({"error": f"Errore durante il recupero degli ordini: {e}"}), 500
 
-@app.route('/')
-def serve_index():
-    """Serve il file index.html dalla cartella statica."""
-    return send_from_directory(app.static_folder, 'index.html')
+@app.route('/<path:path>')
+def serve_static_files(path):
+    """Serve tutti i file statici (CSS, JS, immagini, ecc.) dalla cartella di build."""
+    try:
+        return send_from_directory(app.static_folder, path)
+    except FileNotFoundError:
+        # Se il file non esiste, serve index.html per il routing client-side
+        return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
     # Avvia l'applicazione Flask in modalità di debug sulla porta 5001

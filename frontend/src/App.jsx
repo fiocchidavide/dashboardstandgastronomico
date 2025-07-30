@@ -1,7 +1,53 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Dashboard from './components/Dashboard';
 import Configuration from './components/Configuration';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { 
+    faChartLine, 
+    faCog, 
+    faExclamationTriangle,
+    faInfoCircle,
+    faChartBar,
+    faPause,
+    faPlay,
+    faSyncAlt,
+    faCalendarAlt,
+    faUtensils,
+    faMinus,
+    faPlus,
+    faCheck,
+    faListAlt,
+    faTrash,
+    faList,
+    faSave,
+    faSync
+} from '@fortawesome/free-solid-svg-icons';
+import { faGithub as faGithubBrand } from '@fortawesome/free-brands-svg-icons';
 import './App.css';
+
+// Add icons to the library
+library.add(
+    faChartLine, 
+    faCog, 
+    faExclamationTriangle, 
+    faGithubBrand,
+    faInfoCircle,
+    faChartBar,
+    faPause,
+    faPlay,
+    faSyncAlt,
+    faCalendarAlt,
+    faUtensils,
+    faMinus,
+    faPlus,
+    faCheck,
+    faListAlt,
+    faTrash,
+    faList,
+    faSave,
+    faSync
+);
 
 function App() {
     const [articles, setArticles] = useState([]);
@@ -233,59 +279,90 @@ function App() {
     };
 
     return (
-        <>
-            <header>
-                <h1>Sagra Metrics Dashboard</h1>
-                <nav>
-                    <div className="nav-buttons">
-                        <button onClick={() => setView('dashboard')} disabled={view === 'dashboard'}>
-                            Dashboard
-                        </button>
-                        <button onClick={() => setView('config')} disabled={view === 'config'}>
-                            Configurazione
-                        </button>
+        <div className="app-wrapper">
+            <div className="app-content d-flex flex-column min-vh-100">
+                <header className="app-header sticky-top">
+                    <div className="container-fluid px-4">
+                        <nav className="navbar navbar-expand-lg navbar-light py-3 flex-nowrap">
+                            <div className="navbar-brand flex-shrink-0">
+                                <h1 className="app-title h3 mb-0 text-nowrap">
+                                    <FontAwesomeIcon icon="utensils" className="me-2" />
+                                    <span className="d-none d-md-inline">Dashboard Stand Gastronomico</span>
+                                </h1>
+                            </div>
+                            
+                            <div className="navbar-nav ms-auto d-flex flex-row align-items-center flex-shrink-0">
+                                <div className="btn-group me-3" role="group">
+                                    <button 
+                                        onClick={() => setView('dashboard')} 
+                                        disabled={view === 'dashboard'}
+                                        className={`btn ${view === 'dashboard' ? 'btn-primary' : 'btn-outline-primary'} text-nowrap`}
+                                    >
+                                        <FontAwesomeIcon icon="chart-line" className="" />
+                                        <span className="d-none d-md-inline ms-2">Dashboard</span>
+                                    </button>
+                                    <button 
+                                        onClick={() => setView('config')} 
+                                        disabled={view === 'config'}
+                                        className={`btn ${view === 'config' ? 'btn-primary' : 'btn-outline-primary'} text-nowrap`}
+                                    >
+                                        <FontAwesomeIcon icon="cog" className="" />
+                                        <span className="d-none d-md-inline ms-2">Configurazione</span>
+                                    </button>
+                                </div>
+                                <a 
+                                    href="https://github.com/fiocchidavide/dashboardstandgastronomico" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="d-flex align-items-center text-dark flex-shrink-0"
+                                >
+                                    <FontAwesomeIcon icon={['fab', 'github']} className="" />
+                                </a>
+                            </div>
+                        </nav>
                     </div>
-                    <a 
-                        href="https://github.com/fiocchidavide/dashboardstandgastronomico" 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="github-link"
-                        title="Visualizza su GitHub"
-                    >
-                        <svg className="github-icon" viewBox="0 0 24 24">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                        GitHub
-                    </a>
-                </nav>
-            </header>
-            <main className="card">
-                {error && <p style={{ color: 'red' }}>Errore: {error}</p>}
+                </header>
                 
-                {view === 'dashboard' ? (
-                    <Dashboard
-                        counters={counters}
-                        orders={orders}
-                        cookedCounts={cookedCounts}
-                        onCookedCountChange={handleCookedCountChange}
-                        selectedDate={selectedDate}
-                        refreshIndicator={refreshIndicator}
-                        onToggleAutoRefresh={toggleAutoRefresh}
-                        onManualRefresh={handleManualRefresh}
-                        isLoading={isLoading}
-                    />
-                ) : (
-                    <Configuration
-                        articles={articles}
-                        initialCounters={counters}
-                        onSave={handleSaveCounters}
-                        selectedDate={selectedDate}
-                        refreshInterval={refreshInterval}
-                        onRefreshIntervalChange={handleRefreshIntervalChange}
-                    />
-                )}
-            </main>
-        </>
+                <main className="app-main flex-grow-1">
+                    <div className="container-fluid">
+                        {error && (
+                            <div className="alert alert-danger alert-dismissible fade show mb-4">
+                                <FontAwesomeIcon icon="exclamation-triangle" className="me-2" />
+                                <strong>Errore:</strong> {error}
+                                <button type="button" className="btn-close" onClick={() => setError(null)}></button>
+                            </div>
+                        )}
+                        <div className='row justify-content-center'>
+                            <div className='app-view-container col-md-10'>
+                                {view === 'dashboard' ? (
+                                    <Dashboard
+                                        counters={counters}
+                                        orders={orders}
+                                        cookedCounts={cookedCounts}
+                                        onCookedCountChange={handleCookedCountChange}
+                                        selectedDate={selectedDate}
+                                        refreshIndicator={refreshIndicator}
+                                        onToggleAutoRefresh={toggleAutoRefresh}
+                                        onManualRefresh={handleManualRefresh}
+                                        isLoading={isLoading}
+                                    />
+                                ) : (
+                                    <Configuration
+                                        articles={articles}
+                                        initialCounters={counters}
+                                        onSave={handleSaveCounters}
+                                        selectedDate={selectedDate}
+                                        refreshInterval={refreshInterval}
+                                        onRefreshIntervalChange={handleRefreshIntervalChange}
+                                    />
+                                )}
+                            </div>
+                        </div>
+                        
+                    </div>
+                </main>
+            </div>
+        </div>
     );
 }
 

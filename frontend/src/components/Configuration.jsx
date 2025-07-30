@@ -1,5 +1,18 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+    faCog, 
+    faCalendarAlt, 
+    faSyncAlt, 
+    faUtensils, 
+    faPlus, 
+    faInfoCircle, 
+    faTrash, 
+    faList, 
+    faExclamationTriangle,
+    faSave
+} from '@fortawesome/free-solid-svg-icons';
 
 function Configuration({ articles, initialCounters, onSave, selectedDate, refreshInterval, onRefreshIntervalChange }) {
     const [counters, setCounters] = useState(initialCounters);
@@ -85,68 +98,178 @@ function Configuration({ articles, initialCounters, onSave, selectedDate, refres
     };
 
     return (
-        <div className="configuration">
-            <div className="date-selector" style={{ marginBottom: '20px' }}>
-                <label htmlFor="config-date">Seleziona Data: </label>
-                <input
-                    type="date"
-                    id="config-date"
-                    value={localSelectedDate}
-                    onChange={(e) => setLocalSelectedDate(e.target.value)}
-                />
-            </div>
-            <div className="refresh-interval-selector" style={{ marginBottom: '20px' }}>
-                <label htmlFor="refresh-interval">Intervallo aggiornamento automatico (secondi): </label>
-                <input
-                    type="number"
-                    id="refresh-interval"
-                    min="10"
-                    max="600"
-                    value={localRefreshInterval}
-                    onChange={(e) => setLocalRefreshInterval(parseInt(e.target.value, 10) || 60)}
-                />
-                <small style={{ display: 'block', color: '#666', marginTop: '5px' }}>
-                    Inserisci un valore tra 10 e 600 secondi (di default 60 secondi)
-                </small>
-            </div>
-            <h2>Configurazione Contatori</h2>
-            {counters.map((counter, counterIndex) => (
-                <div key={counter.id} className="counter-config">
-                    <input
-                        type="text"
-                        value={counter.name}
-                        onChange={(e) => handleCounterNameChange(counterIndex, e.target.value)}
-                        placeholder="Nome Contatore"
-                    />
-                    <button onClick={() => handleRemoveCounter(counterIndex)} className="remove-btn">Rimuovi Contatore</button>
+        <div className="configuration fade-in-up">
+            {/* General Settings */}
+            <div className="config-section">
+                <h3>
+                    <FontAwesomeIcon icon={faCog} className="me-2" />
+                    Impostazioni Generali
+                </h3>
+                <div className="row g-3">
+                    <div className="col-md-6">
+                        <label htmlFor="config-date" className="form-label fw-medium">
+                            <FontAwesomeIcon icon={faCalendarAlt} className="me-2" />
+                            Seleziona Data:
+                        </label>
+                        <input
+                            type="date"
+                            id="config-date"
+                            className="form-control"
+                            value={localSelectedDate}
+                            onChange={(e) => setLocalSelectedDate(e.target.value)}
+                        />
+                    </div>
                     
-                    <h4>Pietanze Tracciate</h4>
-                    {counter.trackedItems.map((item, itemIndex) => (
-                        <div key={itemIndex} className="tracked-item-config">
-                            <select
-                                value={item.articleId}
-                                onChange={(e) => handleItemChange(counterIndex, itemIndex, 'articleId', e.target.value)}
-                            >
-                                <option value="">Seleziona pietanza</option>
-                                {articles.map(article => (
-                                    <option key={article.id} value={article.id}>{article.descrizione}</option>
-                                ))}
-                            </select>
+                    <div className="col-md-6">
+                        <label htmlFor="refresh-interval" className="form-label fw-medium">
+                            <FontAwesomeIcon icon={faSyncAlt} className="me-2" />
+                            Intervallo aggiornamento (sec):
+                        </label>
+                        <div className="input-group">
                             <input
                                 type="number"
-                                min="1"
-                                value={item.moltiplicatore}
-                                onChange={(e) => handleItemChange(counterIndex, itemIndex, 'moltiplicatore', parseInt(e.target.value, 10))}
-                                placeholder="Moltiplicatore"
+                                id="refresh-interval"
+                                className="form-control"
+                                min="10"
+                                max="600"
+                                value={localRefreshInterval}
+                                onChange={(e) => setLocalRefreshInterval(parseInt(e.target.value, 10) || 60)}
                             />
-                            <button onClick={() => handleRemoveItem(counterIndex, itemIndex)} className="remove-item-btn">x</button>
+                            <span className="input-group-text">sec</span>
+                        </div>
+                        <div className="form-text">
+                            Inserisci un valore tra 10 e 600 secondi (predefinito: 60 secondi)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Counters Header */}
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <h3 className="mb-0">
+                    <FontAwesomeIcon icon={faUtensils} className="me-2" />
+                    Configurazione Contatori
+                </h3>
+                <button onClick={handleAddCounter} className="btn btn-success">
+                    <FontAwesomeIcon icon={faPlus} className="me-2" />
+                    Aggiungi Contatore
+                </button>
+            </div>
+            
+            {counters.length === 0 ? (
+                <div className="alert alert-info">
+                    <FontAwesomeIcon icon={faInfoCircle} className="me-2" />
+                    Nessun contatore configurato. Clicca su "Aggiungi Contatore" per iniziare.
+                </div>
+            ) : (
+                <div className="counter-cards-container mb-4">
+                    {counters.map((counter, counterIndex) => (
+                        <div key={counter.id} className="config-section">
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                <h4 className="mb-0 text-primary fw-bold">
+                                    <FontAwesomeIcon icon={faUtensils} className="me-2" />
+                                    Contatore #{counterIndex + 1}
+                                </h4>
+                                <button 
+                                    onClick={() => handleRemoveCounter(counterIndex)} 
+                                    className="btn btn-outline-danger btn-sm"
+                                >
+                                    <FontAwesomeIcon icon={faTrash} className="me-1" />
+                                    Rimuovi
+                                </button>
+                            </div>
+                            
+                            <div className="mb-4">
+                                <label className="form-label fw-medium">Nome Contatore:</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={counter.name}
+                                    onChange={(e) => handleCounterNameChange(counterIndex, e.target.value)}
+                                    placeholder="Nome Contatore"
+                                />
+                            </div>
+                            
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                <h6 className="mb-0 fw-medium">
+                                    <FontAwesomeIcon icon={faList} className="me-2" />
+                                    Pietanze Tracciate
+                                </h6>
+                                <button 
+                                    onClick={() => handleAddItem(counterIndex)} 
+                                    className="btn btn-outline-success btn-sm"
+                                >
+                                    <FontAwesomeIcon icon={faPlus} className="me-1" />
+                                    Aggiungi Pietanza
+                                </button>
+                            </div>
+                            
+                            {counter.trackedItems.length === 0 ? (
+                                <div className="alert alert-warning">
+                                    <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
+                                    Nessuna pietanza configurata per questo contatore.
+                                </div>
+                            ) : (
+                                <div className="row g-3">
+                                    {counter.trackedItems.map((item, itemIndex) => (
+                                        <div key={itemIndex} className="col-12">
+                                            <div className="card bg-light">
+                                                <div className="card-body">
+                                                    <div className="row align-items-end g-3">
+                                                        <div className="col-md-6">
+                                                            <label className="form-label small fw-medium mb-1">Pietanza:</label>
+                                                            <select
+                                                                className="form-select"
+                                                                value={item.articleId}
+                                                                onChange={(e) => handleItemChange(counterIndex, itemIndex, 'articleId', e.target.value)}
+                                                            >
+                                                                <option value="">Seleziona pietanza</option>
+                                                                {articles.map(article => (
+                                                                    <option key={article.id} value={article.id}>
+                                                                        {article.descrizione}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                        <div className="col-8 col-md-4">
+                                                            <label className="form-label small fw-medium mb-1">Moltiplicatore:</label>
+                                                            <input
+                                                                type="number"
+                                                                className="form-control"
+                                                                min="1"
+                                                                value={item.moltiplicatore}
+                                                                onChange={(e) => handleItemChange(counterIndex, itemIndex, 'moltiplicatore', parseInt(e.target.value, 10))}
+                                                                placeholder="1"
+                                                            />
+                                                        </div>
+                                                        <div className="col-4 col-md-2">
+                                                            <button 
+                                                                onClick={() => handleRemoveItem(counterIndex, itemIndex)} 
+                                                                className="btn btn-outline-danger btn-sm w-100"
+                                                            >
+                                                                <FontAwesomeIcon icon={faTrash} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     ))}
-                    <button onClick={() => handleAddItem(counterIndex)}>Aggiungi Pietanza</button>
                 </div>
-            ))}
-            <button onClick={handleAddCounter}>Aggiungi Contatore</button>
-            <button onClick={handleSave} className="save-btn">Salva Configurazione</button>
+            )}
+            
+            {/* Save Button */}
+            <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button onClick={handleSave} className="btn btn-primary btn-lg">
+                    <FontAwesomeIcon icon={faSave} className="me-2" />
+                    <span className="d-none d-sm-inline">Salva Configurazione</span>
+                    <span className="d-sm-none">Salva</span>
+                </button>
+            </div>
         </div>
     );
 }

@@ -1,7 +1,35 @@
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+    faInfoCircle, 
+    faChartBar, 
+    faPause, 
+    faPlay, 
+    faSyncAlt,
+    faCalendarAlt,
+    faUtensils,
+    faMinus,
+    faPlus,
+    faCheck,
+    faListAlt,
+    faHashtag,
+    faUser,
+    faClock,
+    faInbox
+} from '@fortawesome/free-solid-svg-icons';
 import RefreshIndicator from './RefreshIndicator';
 
-function Dashboard({ counters, orders, cookedCounts, onCookedCountChange, selectedDate, refreshIndicator, onToggleAutoRefresh, onManualRefresh, isLoading }) {
+function Dashboard({ 
+    counters, 
+    orders, 
+    cookedCounts, 
+    onCookedCountChange, 
+    selectedDate, 
+    refreshIndicator, 
+    onToggleAutoRefresh, 
+    onManualRefresh, 
+    isLoading 
+}) {
 
     const calculateOrderContribution = (order, counter) => {
         let contribution = 0;
@@ -77,65 +105,115 @@ function Dashboard({ counters, orders, cookedCounts, onCookedCountChange, select
     };
 
     if (counters.length === 0) {
-        return <p>Per favore, imposta almeno un contatore nella configurazione.</p>;
+        return (
+            <div className="alert alert-info" role="alert">
+                <FontAwesomeIcon icon={faInfoCircle} className="me-2" />
+                Per favore, imposta almeno un contatore nella configurazione.
+            </div>
+        );
     }
 
     return (
-        <div className="dashboard">
-            <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h2>Dashboard</h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                    {refreshIndicator && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <RefreshIndicator
-                                timeRemaining={refreshIndicator.timeRemaining}
-                                totalTime={refreshIndicator.totalTime}
-                                isActive={refreshIndicator.isActive}
-                            />
-                            {onToggleAutoRefresh && (
-                                <button
-                                    onClick={onToggleAutoRefresh}
-                                    style={{
-                                        padding: '8px 12px',
-                                        borderRadius: '4px',
-                                        border: '1px solid #ddd',
-                                        backgroundColor: refreshIndicator.isActive ? '#f44336' : '#4caf50',
-                                        color: 'white',
-                                        cursor: 'pointer',
-                                        fontSize: '12px'
-                                    }}
-                                    title={refreshIndicator.isActive ? 'Disattiva aggiornamento automatico' : 'Attiva aggiornamento automatico'}
-                                >
-                                    {refreshIndicator.isActive ? 'Stop Auto' : 'Start Auto'}
-                                </button>
-                            )}
-                            {onManualRefresh && (
-                                <button
-                                    onClick={onManualRefresh}
-                                    disabled={isLoading}
-                                    style={{
-                                        padding: '8px 12px',
-                                        borderRadius: '4px',
-                                        border: '1px solid #ddd',
-                                        backgroundColor: isLoading ? '#ccc' : '#2196f3',
-                                        color: 'white',
-                                        cursor: isLoading ? 'not-allowed' : 'pointer',
-                                        fontSize: '12px',
-                                        opacity: isLoading ? 0.6 : 1
-                                    }}
-                                    title="Ricarica manualmente gli ordini"
-                                >
-                                    {isLoading ? 'Caricando...' : '🔄 Aggiorna'}
-                                </button>
-                            )}
-                        </div>
-                    )}
-                    <div className="current-date">
-                        <strong>Data selezionata: {selectedDate}</strong>
-                    </div>
+        <div className="dashboard fade-in-up">
+            {/* Header */}
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2 className="text-primary mb-0">
+                    <FontAwesomeIcon icon={faChartBar} className="me-2" />
+                    Dashboard
+                </h2>
+                <div className="badge bg-secondary fs-6 px-3 py-2">
+                    <FontAwesomeIcon icon={faCalendarAlt} className="me-2" />
+                    {selectedDate}
                 </div>
             </div>
-            <div className="counter-summary">
+
+            {/* Auto Refresh Status */}
+            {refreshIndicator && (
+                <div className={`card mb-4 border-start-primary ${refreshIndicator.isActive ? 'border-success' : 'border-secondary'}`}>
+                    <div className="card-body">
+                        <div className="row align-items-center">
+                            <div className="col-6">
+                                <div className="d-flex align-items-center">
+                                    <div className={`rounded-circle me-3 d-inline-flex align-items-center justify-content-center ${
+                                        refreshIndicator.isActive ? 'bg-success' : 'bg-secondary'
+                                    }`} style={{ 
+                                        width: '40px', 
+                                        height: '40px',
+                                        minWidth: '40px',
+                                        minHeight: '40px',
+                                        flexShrink: 0
+                                    }}>
+                                        <FontAwesomeIcon 
+                                            icon={refreshIndicator.isActive ? faSyncAlt : faPause} 
+                                            className={`text-white ${refreshIndicator.isActive ? 'fa-spin' : ''}`}
+                                        />
+                                    </div>
+                                    <div>
+                                        <h6 className="mb-0 fw-bold">
+                                            {refreshIndicator.isActive ? 'Aggiornamento Automatico' : 'Aggiornamento Disattivato'}
+                                        </h6>
+                                        <small className={refreshIndicator.isActive ? 'text-success' : 'text-muted'}>
+                                            {refreshIndicator.isActive ? 'Attivo' : 'Non attivo'}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-6">
+                                <div className="d-flex gap-2 justify-content-end">
+                                    {onToggleAutoRefresh && (
+                                        <button
+                                            onClick={onToggleAutoRefresh}
+                                            className={`btn btn-sm ${refreshIndicator.isActive ? 'btn-outline-danger' : 'btn-success'}`}
+                                        >
+                                            <FontAwesomeIcon icon={refreshIndicator.isActive ? faPause : faPlay} className="me-1" />
+                                            {refreshIndicator.isActive ? 'Disattiva' : 'Attiva'}
+                                        </button>
+                                    )}
+                                    {onManualRefresh && (
+                                        <button
+                                            onClick={onManualRefresh}
+                                            disabled={isLoading}
+                                            className="btn btn-outline-primary btn-sm"
+                                        >
+                                            {isLoading ? (
+                                                <>
+                                                    <span className="spinner-border spinner-border-sm me-1"></span>
+                                                    Caricando...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <FontAwesomeIcon icon={faSyncAlt} className="me-1" />
+                                                    Aggiorna
+                                                </>
+                                            )}
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="row align-items-center mt-3">
+
+                            <div className="col-12">
+                                {refreshIndicator.isActive ? (
+                                    <RefreshIndicator
+                                        timeRemaining={refreshIndicator.timeRemaining}
+                                        totalTime={refreshIndicator.totalTime}
+                                        isActive={refreshIndicator.isActive}
+                                    />
+                                ) : (
+                                    <small className="text-muted">
+                                        <FontAwesomeIcon icon={faInfoCircle} className="me-1" />
+                                        Aggiornamento manuale
+                                    </small>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Counter Cards */}
+            <div className="counter-cards-container d-flex overflow-auto pb-2 mb-3" style={{ gap: '1rem' }}>
                 {counters.map(counter => {
                     const ordered = counterTotals[counter.id].ordered;
                     const cooked = counterTotals[counter.id].cooked;
@@ -143,137 +221,216 @@ function Dashboard({ counters, orders, cookedCounts, onCookedCountChange, select
                     const progressPercentage = ordered > 0 ? (cooked / ordered) * 100 : 0;
                     
                     return (
-                        <div key={counter.id} className="counter-stats">
-                            <h3>{counter.name}</h3>
-                            
-                            {/* Numeri principali */}
-                            <div className="counter-numbers">
-                                <div className="number-item">
-                                    <span className="number-label">Ordinati:</span>
-                                    <span className="number-value ordered">{ordered}</span>
+                        <div key={counter.id} className="counter-card" style={{ minWidth: '350px', flex: '0 0 auto' }}>
+                            <div className="card h-100">
+                                <div className="card-header text-center">
+                                    <h5 className="card-title mb-0 fw-bold">
+                                        <FontAwesomeIcon icon={faUtensils} className="me-2" />
+                                        {counter.name}
+                                    </h5>
                                 </div>
-                                <div className="number-item">
-                                    <span className="number-label">Fatti:</span>
-                                    <span className="number-value cooked">{cooked}</span>
-                                </div>
-                                <div className="number-item">
-                                    <span className="number-label">Da Fare:</span>
-                                    <span className="number-value remaining">{remaining}</span>
-                                </div>
-                            </div>
+                                <div className="card-body">
+                                    {/* Main Numbers */}
+                                    <div className="row text-center mb-3">
+                                        <div className="col-4">
+                                            <div className="fs-3 fw-bold text-info">{ordered}</div>
+                                            <small className="text-muted">Ordinati</small>
+                                        </div>
+                                        <div className="col-4">
+                                            <div className="fs-3 fw-bold text-success">{cooked}</div>
+                                            <small className="text-muted">Fatti</small>
+                                        </div>
+                                        <div className="col-4">
+                                            <div className="fs-3 fw-bold text-warning">{remaining}</div>
+                                            <small className="text-muted">Da Fare</small>
+                                        </div>
+                                    </div>
 
-                            {/* Barra di progresso */}
-                            <div className="progress-container">
-                                <div className="progress-bar">
-                                    <div 
-                                        className="progress-fill" 
-                                        style={{ 
-                                            width: `${Math.min(progressPercentage, 100)}%`,
-                                            backgroundColor: progressPercentage >= 100 ? '#4caf50' : 
-                                                            progressPercentage >= 50 ? '#ff9800' : '#f44336'
-                                        }}
-                                    ></div>
+                                    {/* Progress Bar */}
+                                    <div className="mb-3">
+                                        <div className="d-flex justify-content-between mb-2">
+                                            <small className="text-muted">Progresso</small>
+                                            <small className="fw-bold text-primary">{Math.round(progressPercentage)}%</small>
+                                        </div>
+                                        <div className="progress" style={{ height: '10px' }}>
+                                            <div 
+                                                className={`progress-bar ${
+                                                    progressPercentage >= 100 ? 'bg-success' : 
+                                                    progressPercentage >= 75 ? 'bg-info' :
+                                                    progressPercentage >= 50 ? 'bg-warning' : 'bg-danger'
+                                                }`}
+                                                style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+
+                                    {/* Controls */}
+                                    <div className="mb-3">
+                                        <label className="form-label small fw-medium mb-2">Controllo Fatti:</label>
+                                        <div className="input-group input-group-sm">
+                                            <button 
+                                                onClick={() => onCookedCountChange(counter.id, Math.max(0, (cookedCounts[counter.id] || 0) - 1))}
+                                                className="btn btn-outline-danger"
+                                            >
+                                                <FontAwesomeIcon icon={faMinus} />
+                                            </button>
+                                            <input
+                                                type="number"
+                                                className="form-control text-center fw-bold"
+                                                value={cookedCounts[counter.id] || 0}
+                                                onChange={(e) => {
+                                                    const value = parseInt(e.target.value, 10);
+                                                    onCookedCountChange(counter.id, isNaN(value) || value < 0 ? 0 : value);
+                                                }}
+                                                min="0"
+                                            />
+                                            <button 
+                                                onClick={() => onCookedCountChange(counter.id, (cookedCounts[counter.id] || 0) + 1)}
+                                                className="btn btn-outline-success"
+                                            >
+                                                <FontAwesomeIcon icon={faPlus} />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Quick Adjustment */}
+                                    <div>
+                                        <label className="form-label small fw-medium mb-2">Aggiustamento rapido:</label>
+                                        <div className="input-group input-group-sm">
+                                            <input
+                                                type="number"
+                                                placeholder="±"
+                                                className="form-control"
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        const value = parseInt(e.target.value, 10);
+                                                        if (!isNaN(value)) {
+                                                            const newTotal = Math.max(0, (cookedCounts[counter.id] || 0) + value);
+                                                            onCookedCountChange(counter.id, newTotal);
+                                                            e.target.value = '';
+                                                        }
+                                                    }
+                                                }}
+                                            />
+                                            <button 
+                                                onClick={(e) => {
+                                                    const input = e.target.closest('.input-group').querySelector('input');
+                                                    const value = parseInt(input.value, 10);
+                                                    if (!isNaN(value)) {
+                                                        const newTotal = Math.max(0, (cookedCounts[counter.id] || 0) + value);
+                                                        onCookedCountChange(counter.id, newTotal);
+                                                        input.value = '';
+                                                    }
+                                                }}
+                                                className="btn btn-outline-primary"
+                                            >
+                                                <FontAwesomeIcon icon={faCheck} />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span className="progress-text">{Math.round(progressPercentage)}%</span>
-                            </div>
-
-                            {/* Controlli per i fatti */}
-                            <div className="cooked-controls">
-                                <label>Fatti:</label>
-                                <button onClick={() => onCookedCountChange(counter.id, Math.max(0, (cookedCounts[counter.id] || 0) - 1))}>-</button>
-                                <input
-                                    type="number"
-                                    value={cookedCounts[counter.id] || 0}
-                                    onChange={(e) => {
-                                        const value = parseInt(e.target.value, 10);
-                                        onCookedCountChange(counter.id, isNaN(value) || value < 0 ? 0 : value);
-                                    }}
-                                />
-                                <button onClick={() => onCookedCountChange(counter.id, (cookedCounts[counter.id] || 0) + 1)}>+</button>
-                            </div>
-
-                            {/* Casella per modifiche rapide */}
-                            <div className="adjustment-controls">
-                                <label>Aggiungi/Togli:</label>
-                                <input
-                                    type="number"
-                                    placeholder="±"
-                                    className="adjustment-input"
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            const value = parseInt(e.target.value, 10);
-                                            if (!isNaN(value)) {
-                                                const newTotal = Math.max(0, (cookedCounts[counter.id] || 0) + value);
-                                                onCookedCountChange(counter.id, newTotal);
-                                                e.target.value = '';
-                                            }
-                                        }
-                                    }}
-                                />
-                                <button 
-                                    onClick={(e) => {
-                                        const input = e.target.parentElement.querySelector('.adjustment-input');
-                                        const value = parseInt(input.value, 10);
-                                        if (!isNaN(value)) {
-                                            const newTotal = Math.max(0, (cookedCounts[counter.id] || 0) + value);
-                                            onCookedCountChange(counter.id, newTotal);
-                                            input.value = '';
-                                        }
-                                    }}
-                                    className="apply-btn"
-                                >
-                                    Applica
-                                </button>
                             </div>
                         </div>
                     );
                 })}
             </div>
 
-            <div className="orders-table-container">
-                {isLoading && (
-                    <div style={{ 
-                        padding: '10px', 
-                        backgroundColor: '#e3f2fd', 
-                        border: '1px solid #2196f3', 
-                        borderRadius: '4px', 
-                        marginBottom: '10px',
-                        textAlign: 'center',
-                        color: '#1976d2'
-                    }}>
-                        🔄 Caricamento ordini in corso...
-                    </div>
-                )}
-                <table className="orders-table">
-                    <thead>
-                        <tr>
-                            <th>ID Ordine</th>
-                            <th>Cliente</th>
-                            <th>Ora</th>
-                            {counters.map(counter => (
-                                <th key={counter.id}>{counter.name}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {displayedOrders.map((order, orderIndex) => (
-                            <tr key={order.id_ordine}>
-                                <td>{order.id_ordine}</td>
-                                <td>{order.cliente}</td>
-                                <td>{order.ora}</td>
-                                {counters.map(counter => {
-                                    const contribution = calculateOrderContribution(order, counter);
-                                    const cellColorClass = getCellColor(contribution, counter.id, order);
-                                    return (
-                                        <td key={counter.id} className={cellColorClass}>
-                                            {contribution > 0 ? contribution : ''}
+            {/* Orders Table */}
+            <div className="card">
+                <div className="card-header text-center">
+                    <h5 className="card-title mb-0 fw-bold">
+                        <FontAwesomeIcon icon={faListAlt} className="me-2" />
+                        Ordini del {selectedDate}
+                    </h5>
+                </div>
+                <div className="card-body p-0">
+                    {isLoading && (
+                        <div className="alert alert-info m-3 mb-0">
+                            <div className="d-flex align-items-center">
+                                <div className="spinner-border spinner-border-sm me-2"></div>
+                                Caricamento ordini in corso...
+                            </div>
+                        </div>
+                    )}
+                    
+                    <div className="table-responsive">
+                        <table className="table table-hover mb-0 table-sm table-uniform">
+                            <thead className="table-light">
+                                <tr>
+                                    <th className="text-center">
+                                        <FontAwesomeIcon icon={faHashtag} className="me-1" />
+                                        ID Ordine
+                                    </th>
+                                    <th className="d-none d-sm-table-cell text-center">
+                                        <FontAwesomeIcon icon={faUser} className="me-1" />
+                                        Cliente
+                                    </th>
+                                    <th className="text-center">
+                                        <FontAwesomeIcon icon={faClock} className="me-1" />
+                                        Ora
+                                    </th>
+                                    {counters.map(counter => (
+                                        <th key={counter.id} className="text-center">
+                                            {counter.name}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {displayedOrders.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={3 + counters.length} className="text-center text-muted py-5">
+                                            <div className="d-flex flex-column align-items-center">
+                                                <FontAwesomeIcon icon={faInbox} className="fa-2x mb-3" />
+                                                <p className="mb-0">Nessun ordine trovato per la data selezionata</p>
+                                            </div>
                                         </td>
-                                    );
-                                })}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                    </tr>
+                                ) : (
+                                    displayedOrders.map((order) => (
+                                        <tr key={order.id_ordine}>
+                                            <td className="fw-bold text-center">
+                                                <span className="badge bg-primary">{order.id_ordine}</span>
+                                            </td>
+                                            <td className="d-none d-sm-table-cell text-center">
+                                                <span className="text-truncate d-inline-block">
+                                                    {order.cliente}
+                                                </span>
+                                            </td>
+                                            <td className="text-center">
+                                                <span className="badge bg-light text-dark">{order.ora}</span>
+                                            </td>
+                                            {counters.map(counter => {
+                                                const contribution = calculateOrderContribution(order, counter);
+                                                const cellColorClass = getCellColor(contribution, counter.id, order);
+                                                
+                                                let cellClass = 'text-center';
+                                                
+                                                if (cellColorClass === 'cell-green') {
+                                                    cellClass += ' bg-success bg-opacity-25';
+                                                } else if (cellColorClass === 'cell-yellow') {
+                                                    cellClass += ' bg-warning bg-opacity-25';
+                                                } else if (cellColorClass === 'cell-red') {
+                                                    cellClass += ' bg-danger bg-opacity-25';
+                                                }
+                                                
+                                                return (
+                                                    <td key={counter.id} className={cellClass}>
+                                                        {contribution > 0 ? (
+                                                            contribution
+                                                        ) : (
+                                                            "-"
+                                                        )}
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     );
